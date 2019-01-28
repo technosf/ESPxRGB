@@ -1,0 +1,37 @@
+#######################################
+# Syntax Coloring Map
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+xgamma8     	KEYWORD2
+xgammaarray8	KEYWORD2
+
+xrgbgamma8  	KEYWORD2
+xrgbwgamma8 	KEYWORD2
+
+xhsv2rgb8   	KEYWORD2
+xhsv2rgbgamma8	KEYWORD2
+
+xhsv2rgbw8s  	KEYWORD2
+xhsv2rgbw8e  	KEYWORD2
+xhsv2rgbw8w  	KEYWORD2
+xhsv2rgbw8t  	KEYWORD2
+
+xrgb2rgbw8      KEYWORD2
+
+xrgb2rgbwgamma8 KEYWORD2
+xhsv2rgbw8      KEYWORD2
+xhsv2rgbgamma8  KEYWORD2
+xhsv2rgbwgamma8 KEYWORD2
+
+######################################
+# Constants (LITERAL1)
+#######################################
+
