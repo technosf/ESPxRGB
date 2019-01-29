@@ -1,6 +1,8 @@
 # ESPxRGB
 
-ESPxRGB is an Arduino library of RGB, RGBW, HSV conversion functions and Gamma Correction written in Xtensa assembler for ESP SoCs.
+ESPxRGB is an Arduino library of RGB, RGBW, HSV conversion functions and correction functions for Gamma and Chromiance written in Xtensa assembler for ESP SoCs.
+
+The objective of the library is to be as fast and efficient as possible.
 
 ## Table of Contents  
 
@@ -13,51 +15,56 @@ ESPxRGB is an Arduino library of RGB, RGBW, HSV conversion functions and Gamma C
 
 ## Why an assembler RGB manipulation library
 
-Looking to use small, low-powered SoCs to drive long strings of LEDs with the optimum speed and power efficiency requires efficient algorythms and code. Assembler is as efficient as you can get. The ESP SoCs are great given their feature set, conectivity, power and price. Plus, they are easy to program.
+Looking to use small, low-powered _SoCs_ to drive long strings of LEDs with the optimum speed and power efficiency requires efficient algorythms and code. Assembler is as efficient as you can get. The ESP SoCs are great given their feature set, conectivity, power and price. Plus, they are easy to program.
 
 ## Features
 
 ESPxRGB works in the 8-bit RGB/W space. It covers functions supporting:
-_ RGB to RGBW
-_ _HSV to RGB and RGBW, with a choice of four HSV algorythms
-_ RGB gamma correction (for normalizing the perception of pulsing luminance)
-_ RGB chroma correction (for normalizing the perception of luminance across the spectrum)
-plus intersections of all the above.
 
-External **C** headers provide regular Arduino and ESP-IDF code access to the functions.
+* RGB to RGBW
+* HSV to RGB and RGBW, with a choice of four HSV algorythms
+* RGB gamma correction (for normalizing the perception of pulsing luminance)
+* RGB chroma correction (for normalizing the perception of luminance across the spectrum)
+
+Plus intersections of all the above.
+
+Externalized _**C**_ headers provide regular Arduino and ESP-IDF code access to the functions.
 
 ## Options and Use
 
 Drop the library into your *~Arduino/libraries* folder and include the *ESPxRGB.h* header in your project.
-The library is compiled based on flags in the *src/options.h* file:
-The functions are grouped and can be included/excluded in the compiled code as dictated by pre-processor definitions.
+The library is compiled based on flags in the *src/options.h* file; The functions are grouped and can be included/excluded in the compiled code as dictated by pre-processor definitions.
 
-The *examples* folder contains *sketches* than can test the functions and generate look-up tables used by the code.
+The *examples* folder contains *sketches* than can test the functions and generate look-up tables used by the code. Look-up tables in the _*.S*_ files can be replaced as desired.
 
 ### Functions
 
-#### Conrection
+#### Correction
 
-_ *xgamma8* Normalizes the value of a single 8-bit color value
-_ *xgammaarray8*    Normalizes a range of 8-bit color values
-_ *xrgbgamma8* Normalizes a set of 8-bit RGB values
-_ *xrgbwgamma8* Normalizes a set of 8-bit RGBW values
+* _xgamma8_  - Normalizes the value of a single 8-bit color value
+* _xgammaarray8_  - Normalizes a range of 8-bit color values
+* _xrgbgamma8_  - Normalizes a set of 8-bit RGB values
+* _xrgbwgamma8_  - Normalizes a set of 8-bit RGBW values
 
 #### Conversion
 
-_ *xrgb2rgbw8* RGB to RGBW
-_ *xhsv2rgb8s* HSV to RGB using the Spectrum algorythm
-_ *xhsv2rgb8e*  HSV to RGB using a power efficient function
-_ *xhsv2rgbwt*   HSV to RGB using a tweaked function aproximating FastLED Rainbow HSV
-_ *xhsv2rgb8w*   HSV to RGB using a (sine) wave function
+* _xrgb2rgbw8_  - RGB to RGBW
+* _xhsv2rgb8s_  - HSV to RGB using the Spectrum algorythm
+* _xhsv2rgb8e_  - HSV to RGB using a power efficient function
+* _xhsv2rgbwt_  - HSV to RGB using a tweaked function aproximating FastLED Rainbow HSV
+* _xhsv2rgb8w_  - HSV to RGB using a (sine) wave function
+* _xhsv2rgb8_  - A default HSV to RGB that rferences one of the implemented function. Change as needed.
 
 #### Combined
 
-_ *xhsv2rgbgamma8*  HSV to RGB with gamma correction
-_ *xhsv2rgbwgamma8* HSV to RGB with gamma correction
-_ *xrgb2rgbwgamma8* RGB to RGBW with gamma correction
+* _xhsv2rgbw8_      - HSV to RGBW using default HSV function
+* _xhsv2rgbgamma8_   - HSV to RGB with gamma correction using default HSV function
+* _xhsv2rgbwgamma8_  - HSV to RGB with gamma correction using default HSV function
+* _xrgb2rgbwgamma8_  - RGB to RGBW with gamma correction
 
 ## History
+
+* _v0.1.0_  - Initial check-in and config as a library.
 
 ## References
 

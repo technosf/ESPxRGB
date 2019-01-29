@@ -51,20 +51,3 @@
 //
 
 #endif // __GAMMA__
-
-
-#ifdef __HSV__
-/*
- * HSV configuration
- */
-#define HSV_SEXTANTS    6
-#define HSV_HUE_SEXTANT 256
-#define HSV_HUE_STEPS   (HSV_SEXTANTS * HSV_HUE_SEXTANT)
-#define HSV_HUE_MIN     0
-#define HSV_HUE_MAX     (HSV_HUE_STEPS - 1)
-#define HSV_SAT_MIN     0
-#define HSV_SAT_MAX     255
-#define HSV_VAL_MIN     0
-#define HSV_VAL_MAX     255
-
-#endif // __HSV__

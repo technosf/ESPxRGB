@@ -23,6 +23,7 @@ xhsv2rgbw8s  	KEYWORD2
 xhsv2rgbw8e  	KEYWORD2
 xhsv2rgbw8w  	KEYWORD2
 xhsv2rgbw8t  	KEYWORD2
+xhsv2rgbw8  	KEYWORD2
 
 xrgb2rgbw8      KEYWORD2
 
