@@ -106,7 +106,7 @@ extern "C"
     xrgb2rgbw8(r, g, b, w);
   }
 
-#endif
+#endif // __HSV_RGBW__
 
 #ifdef __GAMMA_HSV_RGBW__
 
