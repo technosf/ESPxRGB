@@ -1,82 +1,90 @@
-# ESPxRGB
+# ESPxRGB 
 
-ESPxRGB is an Arduino library of RGB, RGBW, HSV conversion functions and correction functions for Gamma and Chromiance written in Xtensa assembler for ESP SoCs.
+ESPxRGB is an Arduino library of RGB, RGBW, HSV conversion functions and Gamma Correction written in Xtensa assembler for ESP SoCs.
 
-The objective of the library is to be as fast and efficient as possible.
-
-## Table of Contents  
+## Table of Contents 
 
 - [Why an assembler RGB manipulation library](#why-an-assembler-rgb-manipulation-library)
 - [Features](#features)
 - [Options and Use](#options-and-use)
-- [History](#history)
-- [References](#references)
+- [Versions](#versions)
+- [History and References](#history_and_references)
 - [License](#license)
 
-## Why an assembler RGB manipulation library
+## Why an assembler RGB manipulation library 
 
-Looking to use small, low-powered _SoCs_ to drive long strings of LEDs with the optimum speed and power efficiency requires efficient algorythms and code. Assembler is as efficient as you can get. The ESP SoCs are great given their feature set, conectivity, power and price. Plus, they are easy to program.
+Looking to use small, low-powered SoCs to drive long strings of LEDs with the optimum speed and power efficiency requires efficient algorythms and code. Assembler is as efficient as you can get. The ESP SoCs are great given their feature set, conectivity, power and price. Plus, they are easy to program.
 
-## Features
+The assembler itself is contained in GNU-format assembler **.S** files, and is not _inline assembler_. The **.S** files are compiled along with the **ESPxRGB.h** header when pulled into a project.
+
+## Features 
 
 ESPxRGB works in the 8-bit RGB/W space. It covers functions supporting:
-
 * RGB to RGBW
 * HSV to RGB and RGBW, with a choice of four HSV algorythms
 * RGB gamma correction (for normalizing the perception of pulsing luminance)
 * RGB chroma correction (for normalizing the perception of luminance across the spectrum)
+plus intersections of all the above.
 
-Plus intersections of all the above.
-
-Externalized _**C**_ headers provide regular Arduino and ESP-IDF code access to the functions.
+External **C** headers provide regular Arduino and ESP-IDF code access to the functions.
 
 ## Options and Use
-
 Drop the library into your *~Arduino/libraries* folder and include the *ESPxRGB.h* header in your project.
-The library is compiled based on flags in the *src/options.h* file; The functions are grouped and can be included/excluded in the compiled code as dictated by pre-processor definitions.
+The library is compiled based on flags in the *src/options.h* file:
+The functions are grouped and can be included/excluded in the compiled code as dictated by pre-processor definitions.
 
-The *examples* folder contains *sketches* than can test the functions and generate look-up tables used by the code. Look-up tables in the _*.S*_ files can be replaced as desired.
+The *examples* folder contains *sketches* than can test the functions and generate look-up tables used by the code.
 
 ### Functions
 
-#### Correction
+#### Conversion
 
-* _xgamma8_  - Normalizes the value of a single 8-bit color value
-* _xgammaarray8_  - Normalizes a range of 8-bit color values
-* _xrgbgamma8_  - Normalizes a set of 8-bit RGB values
-* _xrgbwgamma8_  - Normalizes a set of 8-bit RGBW values
+* *xgamma8* Normalizes the value of a single 8-bit color value 
+* *xgammaarray8*    Normalizes a range of 8-bit color values 
+* *xrgbgamma8* Normalizes a set of 8-bit RGB values 
+* *xrgbwgamma8* Normalizes a set of 8-bit RGBW values 
 
 #### Conversion
 
-* _xrgb2rgbw8_  - RGB to RGBW
-* _xhsv2rgb8s_  - HSV to RGB using the Spectrum algorythm
-* _xhsv2rgb8e_  - HSV to RGB using a power efficient function
-* _xhsv2rgbwt_  - HSV to RGB using a tweaked function aproximating FastLED Rainbow HSV
-* _xhsv2rgb8w_  - HSV to RGB using a (sine) wave function
-* _xhsv2rgb8_  - A default HSV to RGB that rferences one of the implemented function. Change as needed.
+* *xrgb2rgbw8* RGB to RGBW
+* *xhsv2rgb8s* HSV to RGB using the Spectrum algorythm
+* *xhsv2rgb8e*  HSV to RGB using a power efficient function
+* *xhsv2rgbwt*   HSV to RGB using a tweaked function aproximating FastLED Rainbow HSV 
+* *xhsv2rgb8w*   HSV to RGB using a (sine) wave function
+* *xhsv2rgb8*   HSV to RGB default function that points to an above function of your choice.
 
-#### Combined
+#### Combined 
 
-* _xhsv2rgbw8_      - HSV to RGBW using default HSV function
-* _xhsv2rgbgamma8_   - HSV to RGB with gamma correction using default HSV function
-* _xhsv2rgbwgamma8_  - HSV to RGB with gamma correction using default HSV function
-* _xrgb2rgbwgamma8_  - RGB to RGBW with gamma correction
+* *xhsv2rgbgamma8*  HSV to RGB with gamma correction
+* *xhsv2rgbwgamma8* HSV to RGB with gamma correction
+* *xrgb2rgbwgamma8* RGB to RGBW with gamma correction
 
-## History
+ 
+##  Versions
 
-* _v0.1.0_  - Initial check-in and config as a library.
+* _0.1.0_	Initial commit and pre-release
 
-## References
 
-## License
+## History and References
 
-ESPxRGB - Copyright 2019 technosf [<https://github.com/technosf>]
+I came to write this library after looking into HSV-to-RGB conversion. [FastLED](https://github.com/FastLED/FastLED) was too broad a library to use, and it dictated that FastLED be at the center of whatever you were doing. 
+
+I came to use [fast_hsv2rgb from Vagrearg](http://www.vagrearg.org/content/hsvrgb): Lots of interesting math and theory, with **C** implementations, and also **AVR**, which got me thinking of why not an **Xtensa** version. I tried copying the logic of the _AVR_ in _fast_hsv2rgb_, and then the _C_ logic, both of which use complex iterative pointer-swapping, but I decided to use a _jump table_, and then to simplify the whole thing.
+
+The simplest HSV to RGB code out there, I found, is [Kasper Kamperman's](https://www.kasperkamperman.com/blog/arduino/arduino-programming-hsb-to-rgb/), with a simple flow through and _case_ at the end. Looking at it, I found I could simplify it a little more by pulling common calculation up out of the _case_; I then implemented that in _Xtensa_.
+
+Reading up on HSV again on [Instructables](https://www.instructables.com/id/How-to-Make-Proper-Rainbow-and-Random-Colors-With-/), [Ontaelio](https://www.instructables.com/member/Ontaelio/)
+
+
+## License 
+
+ESPxRGB - Copyright 2019  technosf  [https://github.com/technosf]
 
 Licensed under the GNU LESSER GENERAL PUBLIC LICENSE, Version 3.0 or greater (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    https://www.gnu.org/licenses/lgpl-3.0.en.html
+	https://www.gnu.org/licenses/lgpl-3.0.en.html
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
