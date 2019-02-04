@@ -39,19 +39,28 @@ extern "C"
   void xgammaarray8(uint8_t *pntr, uint8_t count);
 
   /*
-    Gamma correction on RGB in 8-bit range
+    Gamma correction on RGB/W in 8-bit range
   */
   void xrgbgamma8(uint8_t *r, uint8_t *g, uint8_t *b);
+  void xrgbwgamma8(uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *w);
 
   /*
 
     Gamma correction on RGBW in 8-bit range
   */
-  void xrgbwgamma8(uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *w);
+  void xrgbmgamma8(uint8_t *r, uint8_t *g, uint8_t *b, float multiplier );
+  void xrgbwmgamma8(uint8_t *r, uint8_t *g, uint8_t *b, uint8_t *w, float multiplier );
 
 #endif // __GAMMA__
 
 #ifdef __HSV__
+
+#define HSV_HUE_MIN		0
+#define HSV_HUE_MAX		1535
+#define HSV_SAT_MIN		0
+#define HSV_SAT_MAX		255
+#define HSV_VAL_MIN		0
+#define HSV_VAL_MAX		255
 
   /*
      HSV to RGB for 8-bit range

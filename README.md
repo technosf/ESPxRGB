@@ -1,6 +1,6 @@
 # ESPxRGB 
 
-ESPxRGB is an Arduino library of RGB, RGBW, HSV conversion functions and Gamma Correction written in Xtensa assembler for ESP SoCs.
+ESPxRGB is an Arduino library of RGB, RGBW, HSV conversion functions and Gamma Correction written in Xtensa assembler for the ESP32 SoC.
 
 ## Table of Contents 
 
@@ -8,12 +8,12 @@ ESPxRGB is an Arduino library of RGB, RGBW, HSV conversion functions and Gamma C
 - [Features](#features)
 - [Options and Use](#options-and-use)
 - [Versions](#versions)
-- [History and References](#history_and_references)
+- [History and References](#history-and-references)
 - [License](#license)
 
 ## Why an assembler RGB manipulation library 
 
-Looking to use small, low-powered SoCs to drive long strings of LEDs with the optimum speed and power efficiency requires efficient algorythms and code. Assembler is as efficient as you can get. The ESP SoCs are great given their feature set, conectivity, power and price. Plus, they are easy to program.
+Looking to use small, low-powered SoCs to drive long strings of LEDs with the optimum speed and power efficiency requires efficient algorythms and code. Assembler is as efficient as you can get. The ESP32 SoCs are great given their feature set, conectivity, power and price. Plus, they are easy to program.
 
 The assembler itself is contained in GNU-format assembler **.S** files, and is not _inline assembler_. The **.S** files are compiled along with the **ESPxRGB.h** header when pulled into a project.
 

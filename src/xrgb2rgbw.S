@@ -74,13 +74,11 @@
 .endm
 
 
-// --------------- Externals ---------------
-
-
   .text
 
-  .global xrgb2rgbw8
+// --------------- Externals ---------------
 
+    .global xrgb2rgbw8
 
 // --------------- Code ---------------
 
@@ -91,48 +89,48 @@
   .type   xrgb2rgbw8, @function
   .align 4
 xrgb2rgbw8:
-  .frame  a1,  32
-  entry   a1,  32
+  .frame  a1,   32
+  entry   a1,   32
 
 
 _rgb2rgbw8:
 // Get the color values from the pointers
-  l8ui    R,  p_R, 0
-  l8ui    G,  p_G, 0
-  l8ui    B,  p_B, 0
-  movi    W,  0
+  l8ui    R,    p_R,  0
+  l8ui    G,    p_G,  0
+  l8ui    B,    p_B,  0
+  movi    W,    0
 
 // Max - M = max(Ri,Gi,Bi)
-  maxu    M, R,  G
-  maxu    M, M,  B
-  beqz    M, _exit             // Max is zero, w = zero
+  maxu    M,    R,    G
+  maxu    M,    M,    B
+  beqz    M,    _exit               // Max is zero, w = zero
   
 // Min - m = min(Ri,Gi,Bi)
-  minu    m, R,  G
-  minu    m, m,  B
-  beqz    m, _exit              // Min is zero, w = Max
+  minu    m,    R,    G
+  minu    m,    m,    B
+  beqz    m,    _exit               // Min is zero, w = Max
   
-  mov     W, M                  // W = M, default
-  slli    temp, m,  1           // temp = 2m
-  bge     M, temp, _k           // M > 2 * m, bypass calc, use W = M
+  mov     W,    M                   // W = M, default
+  slli    temp, m,    1             // temp = 2m
+  bge     M,    temp, _k            // M > 2 * m, bypass calc, use W = M
   
-  mul16u  W,    m,  M           // W = M*m
-  sub     temp, M, m            // temp = M -m
-  quou    W,    W,    temp      // W = (M * m) / (M - m)
+  mul16u  W,    m,    M             // W = M*m
+  sub     temp, M,    m             // temp = M -m
+  quou    W,    W,    temp          // W = (M * m) / (M - m)
 
 
 _k:
-  add   K,  W,  M               // K = (Wo + M)
-  quou  K,  K,  m               // K = (Wo + M) / m
+  add     K,    W,    M             // K = (Wo + M)
+  quou    K,    K,    m             // K = (Wo + M) / m
   
-  movi  Q,  0xff
-  m_calcoffset  R, p_R
-  m_calcoffset  G, p_G
-  m_calcoffset  B, p_B
+  movi    Q,    0xFF
+  m_calcoffset  R,    p_R
+  m_calcoffset  G,    p_G
+  m_calcoffset  B,    p_B
 
 _exit:
 
-s8i     W,  p_W,  0
+s8i       W,    p_W,  0
 retw.n
 
 #endif  // __RGBW__

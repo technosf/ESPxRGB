@@ -48,7 +48,7 @@
 #define base    a3  
 #define slope   a10    
 
-#define delta   a11
+#define chroma  a11
 #define jumper  a12
 #define temp    a13
 
@@ -66,8 +66,6 @@
     .global xhsv2rgb8e
     .global xhsv2rgb8w
     .global xhsv2rgb8t
-
-
   
 // ====================== Spectrum ======================
 
@@ -82,11 +80,11 @@
   .type   xhsv2rgb8s,@function
   .align 4
 xhsv2rgb8s:
-  .frame    a1,  32
-  entry     a1,  32  
+  .frame  a1,  32
+  entry   a1,  32  
 
-  movi  jumper, _hsv2rgb8s
-  j     _range_check_and_delta 
+  movi    jumper, _hsv2rgb8s
+  j _range_check_and_chroma 
 
   /*
    * 
@@ -113,11 +111,11 @@ _hsv2rgb8s:
     
 _s_slope_calc:
 
-  mul16u  slope,  delta,  step          // slope = delta * step
-  srli    slope,  slope,  8             // slope = (delta * step) / 256
-  add.n   slope,  slope,  base          // slope = ((delta * step)/256) + base
+  mul16u  slope,  chroma,  step         // slope = chroma * step
+  srli    slope,  slope,  8             // slope = (chroma * step) / 256
+  add.n   slope,  slope,  base          // slope = ((chroma * step)/256) + base
 
-  movi    jumper, _vector6               // vector addr     
+  movi    jumper, _vector6              // vector addr     
   j _sectorvector                       // jump to sector-specific code
 
 
@@ -135,11 +133,11 @@ _s_slope_calc:
   .type   xhsv2rgb8e,@function
   .align 4
 xhsv2rgb8e:
-  .frame    a1,  32
-  entry     a1,  32  
+  .frame  a1,  32
+  entry   a1,  32  
 
-  movi  jumper, _hsv2rgb8e
-  j     _range_check_and_delta 
+  movi    jumper, _hsv2rgb8e
+  j _range_check_and_chroma 
 
   /*
    * 
@@ -161,17 +159,17 @@ _hsv2rgb8e:
   
   bbci    sector, 0x0, _e_slope_calc    // Do not invert step/slope if even sector
   
-  xor     step,  step, temp             // step = 256 - step 
+  xor     step,   step,   temp          // step = 256 - step 
 
     
 _e_slope_calc:
 
-  mul16u  delta,  delta,  step          // delta * step
-  add.n   slope,  base,   delta         // slope = (delta * step) + base
-  srli    slope,  slope,  9             // slope = ((delta * step) + base ) / 512
+  mul16u  chroma, chroma, step          // chroma * step
+  add.n   slope,  base,   chroma        // slope = (chroma * step) + base
+  srli    slope,  slope,  9             // slope = ((chroma * step) + base ) / 512
   xor     val,    slope,  temp          // val = inverted slope
 
-  movi    jumper, _vector6               // vector addr     
+  movi    jumper, _vector6              // vector addr     
   j _sectorvector                       // jump to sector-specific code
 
 // ====================== Wave ======================
@@ -187,11 +185,11 @@ _e_slope_calc:
   .type   xhsv2rgb8w,@function
   .align 4
 xhsv2rgb8w:
-  .frame    a1,  32
-  entry     a1,  32  
+  .frame  a1,  32
+  entry   a1,  32  
 
-  movi  jumper, _hsv2rgb8w
-  j     _range_check_and_delta 
+  movi    jumper, _hsv2rgb8w
+  j _range_check_and_chroma 
   
 /*
  * Do the calculations 
@@ -205,9 +203,9 @@ _hsv2rgb8w:
     
 _w_slope_calc:
 
-  mul16u  delta,  delta,  step          // delta * step
-  add.n   slope,  base,   delta         // slope = (delta * step) + base
-  srli    slope,  slope,  8             // slope = ((delta * step) + base ) / 256 
+  mul16u  chroma, chroma, step          // chroma * step
+  add.n   slope,  base,   chroma        // slope = (chroma * step) + base
+  srli    slope,  slope,  8             // slope = ((chroma * step) + base ) / 256 
  
   movi    jumper,  _wave_quarter        // sine table goes in jumper
   add.n   jumper, jumper, slope         // Calculate the sine address
@@ -215,7 +213,7 @@ _w_slope_calc:
 
   xor     val,    slope,  temp          // val = inverted slope
 
-  movi    jumper, _vector6               // vector addr     
+  movi    jumper, _vector6              // vector addr     
   j _sectorvector                       // jump to sector-specific code
 
 
@@ -233,8 +231,8 @@ _w_slope_calc:
   .type   xhsv2rgb8t,@function
   .align 4
 xhsv2rgb8t:
-  .frame    a1,  32
-  entry     a1,  32  
+  .frame  a1,  32
+  entry   a1,  32  
 
   beqz    val,    _monochromatic_exit       // if v = 0, jump set values to off, exit
   beqz    sat,    _monochromatic_exit       // if s = 0, jump set values to monochromatic, exit
@@ -244,21 +242,21 @@ xhsv2rgb8t:
   xor     base,   sat, temp                 // base = 255 - sat
   mul16u  base,   base, val                 // base = ((255 - sat) * val)
   srli    base,   base, 8                   // base = ((255 - sat) * val) >> 8;
-  /// Delta
-  sub     delta,  val,  base                // delta = val - base
-  mov     slope,  delta
-  movi    temp,   0x03                      // delta / 3 
-  quou    delta,  delta,  temp              // delta / 3
+  /// chroma
+  sub     chroma, val,  base                // chroma = val - base
+  mov     slope,  chroma
+  movi    temp,   0x03                      // chroma / 3 
+  quou    chroma, chroma, temp              // chroma / 3
   /// Steps
   movi    temp,   T_STEPS                   // 192
   remu    step,   hue,  temp                // Step = mod hue, 192
   quou    sector, hue,  temp                // Sector = hue / 192
   /// Slope
-  mul16u  slope,  delta,  step              // slope = delta * step
-  quou    slope,  slope,  temp              // slope = delta * step /192
+  mul16u  slope,  chroma,  step             // slope = chroma * step
+  quou    slope,  slope,  temp              // slope = chroma * step /192
 
 
-  movi    jumper, _vector8                   // vector addr  
+  movi    jumper, _vector8                  // vector addr  
   movi    temp,   T_SECTORS                 // 8 sectors max
   bgeu    sector, temp, _tweak_max          // Branch if sector is out of range
   j _sectorvector                           // jump to sector-specific code
@@ -283,8 +281,8 @@ _T0:
   retw.n  
 
 _T1:   
-  sub     val,    val,    delta             // val = val - delta
-  add     slope,  slope,  delta             // slope = delta + slope
+  sub     val,    val,    chroma             // val = val - chroma
+  add     slope,  slope,  chroma             // slope = chroma + slope
   add     slope,  slope,  base              // slope = base + slope
   s8i     val,    p_R,    0
   s8i     slope,  p_G,    0
@@ -292,10 +290,10 @@ _T1:
   retw.n  
 
 _T2:   
-  addx2   temp,   slope,  delta           // s* slope + delta
-  sub     val,    val,    temp            // val - delta - 2*slope
+  addx2   temp,   slope,  chroma           // s* slope + chroma
+  sub     val,    val,    temp            // val - chroma - 2*slope
   add     slope,  slope,  base            // slope = 2 * inv slope + base
-  addx2   slope,  delta,  slope 
+  addx2   slope,  chroma,  slope 
   s8i     val,    p_R,    0
   s8i     slope,  p_G,    0
   s8i     base,   p_B,    0
@@ -310,7 +308,7 @@ _T3:
   retw.n  
 
 _T4:   
-  addx2   slope,  slope,  delta
+  addx2   slope,  slope,  chroma
   sub     val,    val,    slope
   add     slope,  slope,  base
   s8i     base,   p_R,    0
@@ -327,8 +325,8 @@ _T5:
   retw.n  
 
 _T6:   
-  add     temp,   delta, slope             // val = val - slope
-  sub     val,    val,   temp             // val = val - delta
+  add     temp,   chroma, slope             // val = val - slope
+  sub     val,    val,   temp             // val = val - chroma
   add     slope,  temp,  base              // slope = base + slope
   s8i     slope,  p_R,    0
   s8i     base,   p_G,    0
@@ -336,7 +334,7 @@ _T6:
   retw.n  
 
 _T7:         
-  sub     slope,  delta,  slope              // Invert slope
+  sub     slope,  chroma, slope             // Invert slope
   sub     val,    val,    slope             // val = val - inv slope
   add     slope,  slope,  base              // slope = base + inv slope
   s8i     val,    p_R,    0
@@ -346,16 +344,16 @@ _T7:
 
 // ============ Common ============
 
-_range_check_and_delta:
+_range_check_and_chroma:
   beqz    val,    _monochromatic_exit       // if v = 0, jump set values to off, exit
   beqz    sat,    _monochromatic_exit       // if s = 0, jump set values to monochromatic, exit
 
-  /// Delta
+  /// chroma
   movi    temp,   0xFF                      // Load sector step lsb mask
   xor     base,   sat, temp                 // base = 255 - sat
   mul16u  base,   base, val                 // base = ((255 - sat) * val)
   srli    base,   base, 8                   // base = ((255 - sat) * val) >> 8;
-  sub     delta,  val,  base                // delta = val - base; 
+  sub     chroma, val,  base                // chroma = val - base; 
 
   /// Steps
   and     step,   hue, temp                 // Get sector step
@@ -379,7 +377,7 @@ _sectorvector:
   mul16u  temp,   temp,   sector          // sector X words   
   add.n   jumper, jumper, temp            // Vector plus words
   l32i.n  jumper, jumper, 0               // load jumper address from vector
-  jx      jumper                          // jump   
+  jx jumper                               // jump   
 
 /*
  *  Sector-specific code
@@ -449,47 +447,5 @@ _vector8:
   .word _T5
   .word _T6
   .word _T7
-
-_dim_curve:
-.word 0x00000000, 0x00000000, 0x00000000, 0x00000000
-.word 0x00000000, 0x00000000, 0x00000000, 0x01010101
-.word 0x01010101, 0x01010101, 0x02020201, 0x02020202
-.word 0x03030202, 0x03030303, 0x04040404, 0x05050504
-.word 0x06060605, 0x07070706, 0x08080807, 0x0a090909
-.word 0x0b0b0a0a, 0x0c0c0c0b, 0x0e0e0d0d, 0x100f0f0f
-.word 0x12111110, 0x14131312, 0x16161515, 0x19181717
-.word 0x1b1b1a19, 0x1e1d1d1c, 0x21201f1f, 0x24232222
-.word 0x27262625, 0x2b2a2928, 0x2e2d2c2c, 0x3231302f
-.word 0x36353433, 0x3a393837, 0x3f3e3d3b, 0x43424140
-.word 0x48474645, 0x4d4c4b4a, 0x5351504f, 0x58575554
-.word 0x5e5d5b5a, 0x6462615f, 0x6a696766, 0x716f6d6c
-.word 0x77767472, 0x7e7d7b79, 0x86848280, 0x8d8b8988
-.word 0x9593918f, 0x9d9b9997, 0xa5a3a19f, 0xaeacaaa7
-.word 0xb7b5b2b0, 0xc0bebbb9, 0xc9c7c5c2, 0xd3d1cecc
-.word 0xdddbd8d6, 0xe8e5e2e0, 0xf2f0edea, 0xfdfaf8f5
-
-_wave_quarter:
-/*
- *  Quarter wave, 256 steps, 0x7F max
- */
-.word 0x00000000, 0x00000000, 0x00000000, 0x00000000
-.word 0x00000000, 0x01010100, 0x01010101, 0x02020201
-.word 0x02020202, 0x03030303, 0x04040403, 0x05050404
-.word 0x06050505, 0x07060606, 0x08080707, 0x09090808
-.word 0x0a0a0a09, 0x0b0b0b0a, 0x0d0c0c0c, 0x0e0e0e0d
-.word 0x100f0f0f, 0x11111110, 0x13131212, 0x15141413
-.word 0x16161615, 0x18181717, 0x1a1a1919, 0x1c1c1b1b
-.word 0x1e1e1d1d, 0x20201f1f, 0x22222121, 0x24242323
-.word 0x27262625, 0x29282827, 0x2b2b2a2a, 0x2e2d2c2c
-.word 0x30302f2e, 0x33323131, 0x35353433, 0x38373636
-.word 0x3a3a3938, 0x3d3c3c3b, 0x403f3e3e, 0x42424140
-.word 0x45454443, 0x48474746, 0x4b4a4949, 0x4e4d4c4c
-.word 0x51504f4f, 0x54535251, 0x57565554, 0x5a595857
-.word 0x5d5c5b5a, 0x605f5e5d, 0x63626160, 0x66656463
-.word 0x69686767, 0x6c6b6a6a, 0x6f6e6d6d, 0x72717170
-.word 0x75757473, 0x78787776, 0x7c7b7a79, 0x7f7e7d7c
-
-
-
 
 #endif // __HSV__  
