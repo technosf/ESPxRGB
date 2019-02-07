@@ -61,7 +61,7 @@ The *examples* folder contains *sketches* than can test the functions and genera
 * *xhsv2rgbwgamma8* - HSV to RGB with gamma correction
 * *xrgb2rgbwgamma8* -  RGB to RGBW with gamma correction
 
- 
+
 ##  Versions
 
 * _0.1.0_	Initial commit and pre-release
@@ -69,26 +69,29 @@ The *examples* folder contains *sketches* than can test the functions and genera
 
 ## History and References
 
-I came to write this library after looking into options to do HSV-to-RGB conversion. Initially I looked at [FastLED](https://github.com/FastLED/FastLED) but determined it too broad a library for my use, and it dictated that FastLED be at the center of whatever you were doing which was not what I wanted.
+I came to write this library after looking into options to do HSV-to-RGB conversion. Initially I looked at [FastLED](http://github.com/FastLED/FastLED) but determined it too broad a library for my use, and it dictated that FastLED be at the center of whatever you were doing which was not what I wanted.
 
 Next I came to use [fast_hsv2rgb from Vagrearg](http://www.vagrearg.org/content/hsvrgb): Lots of interesting math and theory on _spectrum_ HSV, with **C** implementations, and also **AVR**, which got me thinking of why not an **Xtensa** version. I tried copying the logic of the _AVR_ in _fast_hsv2rgb_, and then the _C_ logic, both of which use opaque iterative pointer-swapping, but I decided to use a _jump table_, and then to move to simplify the whole thing.
 
-And the simplest HSV to RGB code out there, I found, is [Kasper Kamperman's](https://www.kasperkamperman.com/blog/arduino/arduino-programming-hsb-to-rgb/), with a simple flow through and _case_ at the end. Looking at it, I found I could simplify it a little more by pulling common calculation up out of the _case_; I then implemented that in _Xtensa_. Kasper also addressed _dimming_ for luminance normalization.
+And the simplest HSV to RGB code out there, I found, is [Kasper Kamperman's](http://www.kasperkamperman.com/blog/arduino/arduino-programming-hsb-to-rgb/), with a simple flow through and _case_ at the end. Looking at it, I found I could simplify it a little more by pulling common calculation up out of the _case_; I then implemented that in _Xtensa_. Kasper also addressed _dimming_ for luminance normalization.
 
-Reading up on HSV again on [Instructables](https://www.instructables.com/id/How-to-Make-Proper-Rainbow-and-Random-Colors-With-/), [Ontaelio](https://www.instructables.com/member/Ontaelio/) also spoke to power efficiency through using wave forms and in to how they effected percieved color. I added both power-efficient (saw-tooth) and smoother looking (sine) wave implementation leveraging the _spectrum_ HSV code.
+Reading up on HSV again on [Instructables](http://www.instructables.com/id/How-to-Make-Proper-Rainbow-and-Random-Colors-With-/), [Ontaelio](http://www.instructables.com/member/Ontaelio/) also spoke to power efficiency through using wave forms and in to how they effected percieved color. I added both power-efficient (saw-tooth) and smoother looking (sine) wave implementation leveraging the _spectrum_ HSV code.
 
-Yet the discussion of more natural looking HSV color-wheels led me to look back at [FastLED HSV to RGB](https://github.com/FastLED/FastLED/wiki/FastLED-HSV-Colors) and at their _Rainbow_ HSV. Not being able to quickly grok the code, [looking at the rainbow waveform image](https://raw.github.com/FastLED/FastLED/gh-pages/images/HSV-rainbow-with-desc.jpg) led me to implement an approximation of that as simply as I could.
+Yet the discussion of more natural looking HSV color-wheels led me to look back at [FastLED HSV to RGB](http://github.com/FastLED/FastLED/wiki/FastLED-HSV-Colors) and at their _Rainbow_ HSV. Not being able to quickly grok the code, [looking at the rainbow waveform image](http://raw.github.com/FastLED/FastLED/gh-pages/images/HSV-rainbow-with-desc.jpg) led me to implement an approximation of that as simply as I could.
 
 
-## License 
+## License
 
-ESPxRGB - Copyright 2019  technosf  [https://github.com/technosf]
+ESPxRGB - Copyright 2019  technosf  [http://github.com/technosf]
 
 Licensed under the GNU LESSER GENERAL PUBLIC LICENSE, Version 3.0 or greater (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-	https://www.gnu.org/licenses/lgpl-3.0.en.html
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+http://www.gnu.org/licenses/lgpl-3.0.en.html
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+![lglp3 logo](http://www.gnu.org/graphics/lgplv3-88x31.png)
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,

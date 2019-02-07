@@ -69,7 +69,7 @@
   movi    val,  0x3f80                  // MSBs Float 1.0
   quou    val,  mtpl,   val             // fp 1 = 0x100
   mul16u  temp, temp,   val             // temp = temp * val
-  srli    temp, 8                       // rs temp 8
+  srli    temp, temp,   8               // rs temp 8
   add.n   temp, temp,   \gamma          // Calculate the corrected gamma value adress                
   l8ui    temp, temp,   0               // Load the gamma value into temp from address in temp
   s8i     temp, \pntr,  0               // Store the corrected color value
