@@ -45,8 +45,9 @@ ESPxRGB Tweak  		 2040.31	  978521
 ```
 
 Taking KasperKampemans C impementation of HSV as the baseline:
+
 HSV Implementation | CpS | Additional CpS | Gain % | Gain MpS @ 60 LEDs per Meter
----------------|-----|----------------|--------|-----------------------------
+-------------------|-----|----------------|--------|-----------------------------
 FastHSV | 894,121 | -46,268 | -4.9% | -771 Meters
 KKs Spectrum | 940,389 | 0 |0% | 0 Meters
 ESPxRGB Spectrum| 1,012,261 | 71,872 | 7.6% | +1,198 Meters
