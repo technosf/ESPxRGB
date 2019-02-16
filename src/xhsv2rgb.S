@@ -85,38 +85,23 @@ xhsv2rgb8s:
 
   movi    jumper, _hsv2rgb8s
   j _range_check_and_chroma 
-
-  /*
-   * 
-  val = dim_curve[val];
-  sat = 255 - dim_curve[255 - sat];
-   */
-   /*
-  _sdimmer: 
-  movi    jumper,  _dim_curve        // Gamma table goes in a3
-  add.n   val,    val, jumper                // Calculate the gamma address
-  l8ui    val,    val,  0                // Load into a2 the value at a2
-  */
-
   
-/*
- * Do the calculations 
- */
+
 _hsv2rgb8s:
 
-  bbci    sector, 0x0, _s_slope_calc    // Do not invert step/slope if even sector
+  bbci    sector, 0x0, _s_slope_calc        // Do not invert step/slope if even sector
   
-  xor     step,  step, temp             // step = 256 - step 
+  xor     step,  step, temp                 // step = 256 - step 
 
     
 _s_slope_calc:
 
-  mul16u  slope,  chroma,  step         // slope = chroma * step
-  srli    slope,  slope,  8             // slope = (chroma * step) / 256
-  add.n   slope,  slope,  base          // slope = ((chroma * step)/256) + base
+  mul16u  slope,  chroma,  step             // slope = chroma * step
+  srli    slope,  slope,  8                 // slope = (chroma * step) / 256
+  add.n   slope,  slope,  base              // slope = ((chroma * step)/256) + base
 
-  movi    jumper, _vector6              // vector addr     
-  j _sectorvector                       // jump to sector-specific code
+  movi    jumper, _vector6                  // vector addr     
+  j _sectorvector                           // jump to sector-specific code
 
 
   
@@ -132,45 +117,31 @@ _s_slope_calc:
  */
   .type   xhsv2rgb8e,@function
   .align 4
+
 xhsv2rgb8e:
+
   .frame  a1,  32
   entry   a1,  32  
 
   movi    jumper, _hsv2rgb8e
   j _range_check_and_chroma 
 
-  /*
-   * 
-  val = dim_curve[val];
-  sat = 255 - dim_curve[255 - sat];
-   */
-   /*
-  _sdimmer: 
-  movi    jumper,  _dim_curve        // Gamma table goes in a3
-  add.n   val,    val, jumper                // Calculate the gamma address
-  l8ui    val,    val,  0                // Load into a2 the value at a2
-  */
 
-  
-/*
- * Do the calculations 
- */
 _hsv2rgb8e:
-  
-  bbci    sector, 0x0, _e_slope_calc    // Do not invert step/slope if even sector
-  
-  xor     step,   step,   temp          // step = 256 - step 
 
+  bbci    sector, 0x0, _e_slope_calc        // Do not invert step/slope if even sector
+  xor     step,   step,   temp              // step = 256 - step 
     
+
 _e_slope_calc:
 
-  mul16u  chroma, chroma, step          // chroma * step
-  add.n   slope,  base,   chroma        // slope = (chroma * step) + base
-  srli    slope,  slope,  9             // slope = ((chroma * step) + base ) / 512
-  xor     val,    slope,  temp          // val = inverted slope
+  mul16u  slope,  chroma,  step             // slope = chroma * step
+  srli    slope,  slope,  9                 // slope = (chroma * step) / 512
+  sub     val,    val,    slope             // val = val - slope
+  add.n   slope,  slope,  base              // slope = slope + base
 
-  movi    jumper, _vector6              // vector addr     
-  j _sectorvector                       // jump to sector-specific code
+  movi    jumper, _vector6                  // vector addr     
+  j _sectorvector                           // jump to sector-specific code
 
 // ====================== Wave ======================
 
@@ -184,37 +155,34 @@ _e_slope_calc:
  */
   .type   xhsv2rgb8w,@function
   .align 4
+
 xhsv2rgb8w:
+
   .frame  a1,  32
   entry   a1,  32  
 
   movi    jumper, _hsv2rgb8w
   j _range_check_and_chroma 
   
-/*
- * Do the calculations 
- */
 _hsv2rgb8w: 
 
-  bbci    sector, 0x0, _w_slope_calc    // Do not invert step/slope if even sector
-  
-  xor     step,  step, temp             // step = 256 - step 
+  bbci    sector, 0x0, _w_slope_calc        // Do not invert step/slope if even sector
+  xor     step,  step, temp                 // step = 256 - step 
 
     
 _w_slope_calc:
 
-  mul16u  chroma, chroma, step          // chroma * step
-  add.n   slope,  base,   chroma        // slope = (chroma * step) + base
-  srli    slope,  slope,  8             // slope = ((chroma * step) + base ) / 256 
- 
-  movi    jumper,  _wave_quarter        // sine table goes in jumper
-  add.n   jumper, jumper, slope         // Calculate the sine address
-  l8ui    slope,  jumper, 0             // Load into a2 the value at a2
+  movi    jumper,  _wave_quarter            // sine table goes in jumper
+  add.n   jumper, jumper, step              // Calculate the sine address
+  l8ui    slope,  jumper, 0                 // Load into a2 the value at a2
+  mul16u  slope,  slope,  chroma            // chroma * step 
+  srli    slope,  slope,  8                 // slope = ((chroma * step) + base ) / 256
 
-  xor     val,    slope,  temp          // val = inverted slope
+  sub     val,    val,    slope             // val = val - slope
+  add.n   slope,  slope,  base              // slope = slope + base
 
-  movi    jumper, _vector6              // vector addr     
-  j _sectorvector                       // jump to sector-specific code
+  movi    jumper, _vector6                  // vector addr     
+  j _sectorvector                           // jump to sector-specific code
 
 
 // ====================== Tweaked ======================
@@ -230,7 +198,9 @@ _w_slope_calc:
  */
   .type   xhsv2rgb8t,@function
   .align 4
+
 xhsv2rgb8t:
+
   .frame  a1,  32
   entry   a1,  32  
 
@@ -264,7 +234,8 @@ xhsv2rgb8t:
 /*
  * Set max sectors, steps for tweak model
  */    
- _tweak_max:      
+ _tweak_max:   
+
   movi    sector, T_SECTORS - 1                   
   movi    step,   T_STEPS - 1                    
   j _sectorvector
@@ -281,8 +252,8 @@ _T0:
   retw.n  
 
 _T1:   
-  sub     val,    val,    chroma             // val = val - chroma
-  add     slope,  slope,  chroma             // slope = chroma + slope
+  sub     val,    val,    chroma            // val = val - chroma
+  add     slope,  slope,  chroma            // slope = chroma + slope
   add     slope,  slope,  base              // slope = base + slope
   s8i     val,    p_R,    0
   s8i     slope,  p_G,    0
@@ -290,9 +261,9 @@ _T1:
   retw.n  
 
 _T2:   
-  addx2   temp,   slope,  chroma           // s* slope + chroma
-  sub     val,    val,    temp            // val - chroma - 2*slope
-  add     slope,  slope,  base            // slope = 2 * inv slope + base
+  addx2   temp,   slope,  chroma            // s* slope + chroma
+  sub     val,    val,    temp              // val - chroma - 2*slope
+  add     slope,  slope,  base              // slope = 2 * inv slope + base
   addx2   slope,  chroma,  slope 
   s8i     val,    p_R,    0
   s8i     slope,  p_G,    0
@@ -300,8 +271,8 @@ _T2:
   retw.n  
 
 _T3:   
-  sub     val,    val,    slope           // val = val -slope
-  add     slope,  slope,  base            // slope = slope + base
+  sub     val,    val,    slope             // val = val -slope
+  add     slope,  slope,  base              // slope = slope + base
   s8i     base,   p_R,    0
   s8i     val,    p_G,    0
   s8i     slope,  p_B,    0
@@ -326,8 +297,8 @@ _T5:
 
 _T6:   
   add     temp,   chroma, slope             // val = val - slope
-  sub     val,    val,   temp             // val = val - chroma
-  add     slope,  temp,  base              // slope = base + slope
+  sub     val,    val,   temp               // val = val - chroma
+  add     slope,  temp,  base               // slope = base + slope
   s8i     slope,  p_R,    0
   s8i     base,   p_G,    0
   s8i     val,    p_B,    0
@@ -345,12 +316,13 @@ _T7:
 // ============ Common ============
 
 _range_check_and_chroma:
+
   beqz    val,    _monochromatic_exit       // if v = 0, jump set values to off, exit
   beqz    sat,    _monochromatic_exit       // if s = 0, jump set values to monochromatic, exit
 
   /// chroma
   movi    temp,   0xFF                      // Load sector step lsb mask
-  xor     base,   sat, temp                 // base = 255 - sat
+  xor     base,   sat,  temp                // base = 255 - sat
   mul16u  base,   base, val                 // base = ((255 - sat) * val)
   srli    base,   base, 8                   // base = ((255 - sat) * val) >> 8;
   sub     chroma, val,  base                // chroma = val - base; 
@@ -365,7 +337,8 @@ _range_check_and_chroma:
  * Set HSV to spectrum max range - HSV_HUE_STEP
  * Set sector to max 
  */    
- _sector_max:      
+ _sector_max:   
+
   movi    sector,   S_SECTORS - 1
   movi    step,     S_STEPS - 1  
   jx jumper
@@ -373,6 +346,7 @@ _range_check_and_chroma:
 // ------------------------------
 
 _sectorvector:
+
   movi    temp,   0x4                     // One word 
   mul16u  temp,   temp,   sector          // sector X words   
   add.n   jumper, jumper, temp            // Vector plus words

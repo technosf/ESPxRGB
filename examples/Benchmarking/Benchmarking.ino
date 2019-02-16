@@ -4,7 +4,10 @@
 
 #include "ESPxRGB.h"
 
+const unsigned long MAX_LONG = 4294967295;
 const int STEPS = 1536;
+const unsigned long ITERS = 6291456;
+const float I = ITERS * 1000000;
 
 uint8_t r, g, b;
 
@@ -15,9 +18,31 @@ void setup() {
 
   Serial.begin(115200);
 
-  Serial.println("Benching HSV Conversions");
+  Serial.println("Benching HSV Conversions for 6291456 iterations");
+  Serial.println("Impl\t\t\tTime ms\t\tCalls per Second");
 
-  benchHSV();
+
+  unsigned long elapsed;
+
+  elapsed = benchHSV(1);
+  Serial.printf("%-15s\t\t%8.2f\t%8.2f\n", "FastHSV", elapsed / 1000.0, I / elapsed);
+
+  elapsed = benchHSV(2);
+  Serial.printf("%-15s\t\t%8.2f\t%8.2f\n", "KKs Spectrum", elapsed / 1000.0, I / elapsed);
+
+  elapsed = benchHSV(3);
+  Serial.printf("%-15s\t%8.2f\t%8.2f\n", "ESPxRGB Spectrum", elapsed / 1000.0, I / elapsed);
+
+  elapsed = benchHSV(4);
+  Serial.printf("%-15s\t%8.2f\t%8.2f\n", "ESPxRGB Efficient", elapsed / 1000.0, I / elapsed);
+
+  elapsed = benchHSV(5);
+  Serial.printf("%-15s\t\t%8.2f\t%8.2f\n", "ESPxRGB Wave", elapsed / 1000.0, I / elapsed);
+
+  elapsed = benchHSV(6);
+  Serial.printf("%-15s\t\t%8.2f\t%8.2f\n", "ESPxRGB Tweak", elapsed / 1000.0, I / elapsed);
+
+  Serial.println("\nDone");
 
 }
 
@@ -25,33 +50,37 @@ void loop() {
   // Not used
 }
 
-void benchHSV()
+unsigned long benchHSV(int clc)
 {
-
-  unsigned long spec, eff, wave, tweak, fasth, kk;
-  float iters, i;
-  uint8_t s;
+  unsigned long acc = 0;
 
   for ( uint16_t h = 0; h < STEPS; h++ )
   {
-    Serial.printf("\nh:%u", h);
     for ( int s = 0; s < 256; s++ )
     {
-      fasth += fasthsv(h, s);
-      kk += kkhsv(h, s);
-      spec += hsvs(h, s);
-      eff += hsve(h, s);
-      wave += hsvw(h, s);
-      tweak += hsvt(h, s);
-
-      iters += 16;
+      switch (clc)
+      {
+        case 1:
+          acc += fasthsv(h, s);
+          break;
+        case 2:
+          acc += kkhsv(h, s);
+          break;
+        case 3:
+          acc += hsvs(h, s);
+          break;
+        case 4:
+          acc += hsve(h, s);
+          break;
+        case 5:
+          acc += hsvw(h, s);
+          break;
+        case 6:
+          acc += hsvt(h, s);
+      }
     }
   }
-  i = 1000 * iters;
-
-  Serial.printf( "\n\nComputations over %u Iterations\n\t\tFastHSV Spectrum\tKKs Spectrum\tESPxRGB Spectrum\tEficient\tWave\tTweaked\tAverage\n\n", iters );
-  Serial.printf( "Total Time\t\t%lu\t\t%lu\t\t%lu\t\t%lu\t%lu\t%lu\t%lu\n", fasth , kk, spec, eff , wave, tweak, (fasth+kk+spec+eff+wave+tweak)/6 );
-  Serial.printf( "Comps per Sec\t%f\t\t%f\t\t%f\t\t%f\t%f\t%f\n", fasth , kk, spec, eff , wave, tweak );
+  return acc;
 }
 
 unsigned long hsvs( uint16_t h, uint8_t s)
@@ -74,6 +103,7 @@ unsigned long hsvs( uint16_t h, uint8_t s)
   xhsv2rgb8s(h, s, 224, &r, &g, &b);
   xhsv2rgb8s(h, s, 255, &r, &g, &b);
   endts = micros();
+  if ( endts < startts ) return endts + ( MAX_LONG - startts );
   return endts - startts;
 }
 
@@ -97,6 +127,7 @@ unsigned long hsve( uint16_t h, uint8_t s)
   xhsv2rgb8e(h, s, 224, &r, &g, &b);
   xhsv2rgb8e(h, s, 255, &r, &g, &b);
   endts = micros();
+  if ( endts < startts ) return endts + ( MAX_LONG - startts );
   return endts - startts;
 }
 
@@ -120,6 +151,7 @@ unsigned long hsvw( uint16_t h, uint8_t s)
   xhsv2rgb8w(h, s, 224, &r, &g, &b);
   xhsv2rgb8w(h, s, 255, &r, &g, &b);
   endts = micros();
+  if ( endts < startts ) return endts + ( MAX_LONG - startts );
   return endts - startts;
 }
 
@@ -143,6 +175,7 @@ unsigned long hsvt( uint16_t h,  unsigned int  s)
   xhsv2rgb8t(h, s, 224, &r, &g, &b);
   xhsv2rgb8t(h, s, 255, &r, &g, &b);
   endts = micros();
+  if ( endts < startts ) return endts + ( MAX_LONG - startts );
   return endts - startts;
 }
 
@@ -166,6 +199,7 @@ unsigned long fasthsv( uint16_t h, uint8_t s)
   fast_hsv2rgb(h, s, 224, &r, &g, &b);
   fast_hsv2rgb(h, s, 255, &r, &g, &b);
   endts = micros();
+  if ( endts < startts ) return endts + ( MAX_LONG - startts );
   return endts - startts;
 }
 
@@ -189,5 +223,6 @@ unsigned long kkhsv( uint16_t h, uint8_t s)
   getKKRGB(h, s, 224, &r, &g, &b);
   getKKRGB(h, s, 255, &r, &g, &b);
   endts = micros();
+  if ( endts < startts ) return endts + ( MAX_LONG - startts );
   return endts - startts;
 }

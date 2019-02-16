@@ -1,65 +1,70 @@
-/*  
+/*
   Modified from code from that
 
     created 05-01-2010 by kasperkamperman.com
 */
 
-void getKKRGB(uint16_t hue, uint8_t sat, uint8_t val, uint8_t *R, uint8_t *G , uint8_t *B) 
-{ 
+void getKKRGB(uint16_t hue, uint8_t sat, uint8_t val, uint8_t *R, uint8_t *G , uint8_t *B)
+{
 
-  uint8_t r;
-  uint8_t g;
-  uint8_t b;
-  uint8_t base;
+  uint8_t r, g, b, base, sextant, step;
 
-  if (sat == 0) { // Acromatic color (gray). Hue doesn't mind.
-    *R=val;
-    *G=val;
-    *B=val;  
-  } else  { 
+  if (sat == 0 || val == 0) { // Acromatic color (gray). Hue doesn't mind.
+    *R = val;
+    *G = val;
+    *B = val;
+  } else  {
 
-    base = ((255 - sat) * val)>>8;
+    sextant = hue >> 8;
+    step = hue % 256;
+    if ( sextant >= 6 )
+    {
+      sextant = 5;
+      step = 255;
+    }
+    base = ((255 - sat) * val) >> 8;
 
-    switch(hue/60) {
-    case 0:
+
+    switch (sextant) {
+      case 0:
         r = val;
-        g = (((val-base)*hue)/60)+base;
+        g = (((val - base) * step) / 255) + base;
         b = base;
-    break;
+        break;
 
-    case 1:
-        r = (((val-base)*(60-(hue%60)))/60)+base;
+      case 1:
+        r = (((val - base) * (255 - step)) / 255) + base;
         g = val;
         b = base;
-    break;
+        break;
 
-    case 2:
+      case 2:
         r = base;
         g = val;
-        b = (((val-base)*(hue%60))/60)+base;
-    break;
+        b = (((val - base) * step) / 255) + base;
+        break;
 
-    case 3:
+      case 3:
         r = base;
-        g = (((val-base)*(60-(hue%60)))/60)+base;
+        g = (((val - base) * (255 - step)) / 255) + base;
         b = val;
-    break;
+        break;
 
-    case 4:
-        r = (((val-base)*(hue%60))/60)+base;
+      case 4:
+        r = (((val - base) * step) / 255) + base;
         g = base;
         b = val;
-    break;
+        break;
 
-    case 5:
+      case 5:
         r = val;
         g = base;
-        b = (((val-base)*(60-(hue%60)))/60)+base;
-    break;
+        b = (((val - base) * (255 - step)) / 255) + base;
+        break;
     }
 
-    *R=r;
-    *G=g;
-    *B=b; 
-  }   
+    *R = r;
+    *G = g;
+    *B = b;
+  }
 }

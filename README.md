@@ -29,6 +29,31 @@ plus intersections of some of the above.
 
 External **C** headers provide regular Arduino and ESP-IDF code access to the functions.
 
+## Performance
+
+From the HSV Benchmark example
+```
+Benching HSV Conversions for 6291456 iterations
+
+Impl			Time ms		Calls per Second
+FastHSV        		 2232.91	  894121
+KKs Spectrum   		 2123.05	  940389
+ESPxRGB Spectrum	 1972.31	 1012261
+ESPxRGB Efficient	 1987.78	 1004383
+ESPxRGB Wave   		 2188.28	  912356
+ESPxRGB Tweak  		 2040.31	  978521
+```
+
+Taking KasperKampemans C impementation of HSV as the baseline:
+HSV Implementation | CpS | Additional CpS | Gain % | Gain MpS @ 60 LEDs per Meter
+---------------|-----|----------------|--------|-----------------------------
+FastHSV | 894,121 | -46,268 | -4.9% | -771 Meters
+KKs Spectrum | 940,389 | 0 |0% | 0 Meters
+ESPxRGB Spectrum| 1,012,261 | 71,872 | 7.6% | +1,198 Meters
+ESPxRGB Efficient| 1,004,383 | 63,994 | 6.8% | +1,066 Meters
+ESPxRGB Wave | 912,356 | -28,033 | -3% | -467 Meters
+ESPxRGB Tweak | 978,521 | 38,132 | 4.0% | 635 Meters
+
 ## Options and Use
 
 Drop the library into your *~Arduino/libraries* folder and include the *ESPxRGB.h* header in your project.
@@ -64,6 +89,7 @@ The *examples* folder contains *sketches* than can test the functions and genera
 
 ##  Versions
 
+* _1.0.0_	Initial release
 * _0.1.0_	Initial commit and pre-release
 
 

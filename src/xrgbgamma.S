@@ -42,7 +42,7 @@
 #define count a3
 
 // Working storage
-#define gammatbl  a7
+#define gammatbl a7
 #define val a8
 #define temp a9
 
@@ -54,10 +54,10 @@
  * Update the pointer with the gamma lookup from the table
  */
 .macro  m_gamma8  pntr:req, gamma:req
-  l8ui    temp, \pntr,  0               // load the raw color value
-  add.n   temp, temp,   \gamma          // Calculate the corrected gamma value adress                
-  l8ui    temp, temp,   0               // Load the gamma value into temp from address in temp
-  s8i     temp, \pntr,  0               // Store the corrected color value
+  l8ui    temp, \pntr,  0                   // load the raw color value
+  add.n   temp, temp,   \gamma              // Calculate the corrected gamma value adress                
+  l8ui    temp, temp,   0                   // Load the gamma value into temp from address in temp
+  s8i     temp, \pntr,  0                   // Store the corrected color value
 .endm  
 
 /*
@@ -65,14 +65,14 @@
  * Update the pointer with the gamma lookup from the table
  */
 .macro  m_m_gamma8  pntr:req, gamma:req
-  l8ui    temp, \pntr,  0               // load the raw color value
-  movi    val,  0x3f80                  // MSBs Float 1.0
-  quou    val,  mtpl,   val             // fp 1 = 0x100
-  mul16u  temp, temp,   val             // temp = temp * val
-  srli    temp, temp,   8               // rs temp 8
-  add.n   temp, temp,   \gamma          // Calculate the corrected gamma value adress                
-  l8ui    temp, temp,   0               // Load the gamma value into temp from address in temp
-  s8i     temp, \pntr,  0               // Store the corrected color value
+  l8ui    temp, \pntr,  0                   // load the raw color value
+  movi    val,  0x3f80                      // MSBs Float 1.0
+  quou    val,  mtpl,   val                 // fp 1 = 0x100
+  mul16u  temp, temp,   val                 // temp = temp * val
+  srli    temp, temp,   8                   // rs temp 8
+  add.n   temp, temp,   \gamma              // Calculate the corrected gamma value adress                
+  l8ui    temp, temp,   0                   // Load the gamma value into temp from address in temp
+  s8i     temp, \pntr,  0                   // Store the corrected color value
 .endm  
 
 
@@ -97,16 +97,19 @@
  */
   .type   xgamma8,@function
   .align 4
+
 xgamma8:
+
   .frame  a1,  32
   entry   a1,  32     
 
 
 _gamma8:  
-  movi    a3, _gamma8_table           // Gamma table goes in a3
-  add.n   a2, a2,   a3                // Calculate the gamma address
-  l8ui    a2, a2,   0                 // Load into a2 the value at a2
-  retw.n                              // Return from the windowed call
+
+  movi    a3, _gamma8_table                 // Gamma table goes in a3
+  add.n   a2, a2,   a3                      // Calculate the gamma address
+  l8ui    a2, a2,   0                       // Load into a2 the value at a2
+  retw.n                                    // Return from the windowed call
 
 
 /*            
@@ -117,20 +120,22 @@ _gamma8:
  */
   .type   xrgbmgamma8,@function
   .align 4
+
 xrgbmgamma8:
+
   .frame  a1,  32
   entry   a1,  32   
 
 _rgbmgamma8:
 
-  movi    gammatbl, _gamma8_table         // Lookup table address
-  movi    mtpl,     a5                    // Move mltiplier from a5 to a6
+  movi    gammatbl, _gamma8_table           // Lookup table address
+  mov     mtpl,     a5                      // Move mltiplier from a5 to a6
   
 _calc_rgb_mgamma8:  
 
-  m_m_gamma8  p_R,  gammatbl               // Red
-  m_m_gamma8  p_G,  gammatbl               // Green
-  m_m_gamma8  p_B,  gammatbl               // Blue
+  m_m_gamma8  p_R,  gammatbl                // Red
+  m_m_gamma8  p_G,  gammatbl                // Green
+  m_m_gamma8  p_B,  gammatbl                // Blue
   retw.n  
 
 
@@ -142,7 +147,9 @@ _calc_rgb_mgamma8:
  */
   .type   xrgbwmgamma8,@function
   .align 4
+
 xrgbwmgamma8:
+
   .frame  a1,  32
   entry   a1,  32     
 
@@ -152,8 +159,8 @@ _rgbwmgamma8:
   
 _calc_w_mgamma8:  
 
-  m_m_gamma8  p_W,  gammatbl            // White
-  j _calc_rgb_mgamma8                   // Calculate the RGB
+  m_m_gamma8  p_W,  gammatbl                // White
+  j _calc_rgb_mgamma8                       // Calculate the RGB
   
 
 /*            
@@ -164,21 +171,23 @@ _calc_w_mgamma8:
  */
   .type   xrgbgamma8,@function
   .align 4
+
 xrgbgamma8:
+
   .frame  a1,  32
   entry   a1,  32     
 
 
 _rgbgamma8:
 
-  movi    gammatbl, _gamma8_table       // Lookup table address
+  movi    gammatbl, _gamma8_table           // Lookup table address
 
   
 _calc_rgb_gamma8:  
 
-  m_gamma8  p_R,  gammatbl               // Red
-  m_gamma8  p_G,  gammatbl               // Green
-  m_gamma8  p_B,  gammatbl               // Blue
+  m_gamma8  p_R,  gammatbl                  // Red
+  m_gamma8  p_G,  gammatbl                  // Green
+  m_gamma8  p_B,  gammatbl                  // Blue
   retw.n   
 
   
@@ -190,7 +199,9 @@ _calc_rgb_gamma8:
  */
   .type   xrgbwgamma8,@function
   .align 4
+
 xrgbwgamma8:
+
   .frame  a1,  32
   entry   a1,  32     
 
@@ -201,8 +212,8 @@ _rgbwgamma8:
   
 _calc_w_gamma8:  
 
-  m_gamma8  p_W,    gammatbl            // White
-  j _calc_rgb_gamma8                    // Calculate the RGB
+  m_gamma8  p_W,    gammatbl                // White
+  j _calc_rgb_gamma8                        // Calculate the RGB
      
 
 
@@ -215,7 +226,9 @@ _calc_w_gamma8:
  */
   .type   xgammaarray8,@function
   .align 4
+
 xgammaarray8:
+
   .frame  a1,  32
   entry   a1,  32     
 
@@ -227,8 +240,8 @@ _gammaarray8:
 _calc_array_gamma8:
 
   loop      count,    _loopexit    
-  m_gamma8  pntr,     gammatbl            // Update pntr addr with gamma tble lookup   
-  addi.n    pntr,     pntr,     0x01      // Increment pntr   
+  m_gamma8  pntr,     gammatbl              // Update pntr addr with gamma tble lookup   
+  addi.n    pntr,     pntr,     0x01        // Increment pntr   
   
 _loopexit:
 
@@ -243,17 +256,19 @@ _loopexit:
  */
   .type   xrgbluma8,@function
   .align 4
+
 xrgbluma8:
+
   .frame  a1,  32
   entry   a1,  32     
 
 _rgbluma8:  
 
-  l8ui    val,  p_R,  0                 // Halve Red intensity
+  l8ui    val,  p_R,  0                     // Halve Red intensity
   srli    val,  val,  1
   s8i     val,  p_R,  0 
 
-  l8ui    val,  p_G,  0                 // Quarter Green intensity
+  l8ui    val,  p_G,  0                     // Quarter Green intensity
   srli    val,  val,  2
   s8i     val,  p_G,  0 
 
