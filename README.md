@@ -6,6 +6,7 @@ ESPxRGB is an Arduino library of RGB, RGBW, HSV conversion functions and Gamma C
 
 - [Why an assembler RGB manipulation library](#why-an-assembler-rgb-manipulation-library)
 - [Features](#features)
+- [Performance](#performance)
 - [Options and Use](#options-and-use)
 - [Versions](#versions)
 - [History and References](#history_and_references)
