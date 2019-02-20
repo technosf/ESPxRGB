@@ -47,14 +47,14 @@ ESPxRGB Tweak  		 2040.31	  978521
 
 Taking KasperKampemans C impementation of HSV as the baseline:
 
-HSV Implementation | CpS | Additional CpS | Gain % | Gain MpS @ 60 LEDs per Meter
--------------------|-----|----------------|--------|-----------------------------
-FastHSV | 894,121 | -46,268 | -4.9% | -771 Meters
+HSV Implementation | CpS | Additional CpS | Gain % | Gain @ 50 FPS and 60 LEDs per Meter
+-------------------|-----|----------------|--------|------------------------------------
+FastHSV | 894,121 | -46,268 | -4.9% | -15 Meters
 KKs Spectrum | 940,389 | 0 |0% | 0 Meters
-ESPxRGB Spectrum| 1,012,261 | 71,872 | 7.6% | +1,198 Meters
-ESPxRGB Efficient| 1,004,383 | 63,994 | 6.8% | +1,066 Meters
-ESPxRGB Wave | 912,356 | -28,033 | -3% | -467 Meters
-ESPxRGB Tweak | 978,521 | 38,132 | 4.0% | 635 Meters
+ESPxRGB Spectrum| 1,012,261 | 71,872 | 7.6% | +23 Meters
+ESPxRGB Efficient| 1,004,383 | 63,994 | 6.8% | +21 Meters
+ESPxRGB Wave | 912,356 | -28,033 | -3% | -9 Meters
+ESPxRGB Tweak | 978,521 | 38,132 | 4.0% | +12 Meters
 
 ## Options and Use
 
