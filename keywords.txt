@@ -25,12 +25,12 @@ xhsv2rgbw8w  	KEYWORD2
 xhsv2rgbw8t  	KEYWORD2
 xhsv2rgbw8  	KEYWORD2
 
-xrgb2rgbw8      KEYWORD2
+xrgb2rgbw8  	KEYWORD2
 
-xrgb2rgbwgamma8 KEYWORD2
-xhsv2rgbw8      KEYWORD2
-xhsv2rgbgamma8  KEYWORD2
-xhsv2rgbwgamma8 KEYWORD2
+xrgb2rgbwgamma8	KEYWORD2
+xhsv2rgbw8  	KEYWORD2
+xhsv2rgbgamma8	KEYWORD2
+xhsv2rgbwgamma8	KEYWORD2
 
 ######################################
 # Constants (LITERAL1)
