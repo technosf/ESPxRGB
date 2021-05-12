@@ -6,7 +6,7 @@
   and generation of reference tables.
 
   This is the super sketch containing globals etc. 
-  Set up and loop are in _main.
+  Set up and loop are in main.
 
 */
 
