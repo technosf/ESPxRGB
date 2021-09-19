@@ -1,6 +1,6 @@
 # ESPxRGB 
 
-ESPxRGB is an Arduino library of RGB, RGBW, HSV conversion functions and Gamma Correction written in Xtensa assembler for ESP SoCs.
+**ESPxRGB** is an Arduino library of RGB, RGBW, HSV conversion functions and Gamma Correction written in **Xtensa** assembler for ESP SoCs that use Xtensa cores (_ESP32_).
 
 ## Table of Contents 
 
@@ -78,7 +78,7 @@ The *examples* folder contains *sketches* than can test the functions and genera
 * *xrgb2rgbw8* - RGB to RGBW
 * *xhsv2rgb8s* - HSV to RGB using the Spectrum algorythm
 * *xhsv2rgb8e* -  HSV to RGB using a power efficient function
-* *xhsv2rgbwt* - HSV to RGB using a tweaked function aproximating FastLED Rainbow HSV 
+* *xhsv2rgb8t* - HSV to RGB using a tweaked function aproximating FastLED Rainbow HSV 
 * *xhsv2rgb8w* -  HSV to RGB using a (sine) wave function
 * *xhsv2rgb8* -  HSV to RGB default function that points to an above function of your choice.
 
